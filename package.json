@@ -2,6 +2,7 @@
   "name": "music-ai-agent",
   "version": "0.1.0",
   "description": "AI music companion for work",
+  "author": "gyn",
   "main": "dist/main/index.js",
   "scripts": {
     "dev": "concurrently \"npm run dev:renderer\" \"npm run dev:main\"",
