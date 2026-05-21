@@ -20,7 +20,7 @@ const App: React.FC = () => {
       <TitleBar onOpenSidebar={openSidebar} />
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <div style={{ height: `${splitRatio * 100}%`, minHeight: 120, overflow: 'hidden' }}>
-          <MusicPanel />
+          <MusicPanel onImport={() => openSidebar('import')} />
         </div>
         <DraggableDivider onResize={setSplitRatio} />
         <div style={{ flex: 1, minHeight: 100, overflow: 'hidden' }}>
