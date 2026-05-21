@@ -110,7 +110,11 @@ async function callChatLLM(
     return data.content[0].text;
   }
 
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+  const baseUrl = config.provider === 'deepseek'
+    ? 'https://api.deepseek.com/v1/chat/completions'
+    : 'https://api.openai.com/v1/chat/completions';
+
+  const response = await fetch(baseUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -125,7 +129,7 @@ async function callChatLLM(
 
   if (!response.ok) {
     const err = await response.text();
-    throw new Error(`OpenAI API error: ${response.status} ${err}`);
+    throw new Error(`${config.provider === 'deepseek' ? 'DeepSeek' : 'OpenAI'} API error: ${response.status} ${err}`);
   }
 
   const data = await response.json() as any;

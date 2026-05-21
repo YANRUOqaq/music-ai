@@ -2,7 +2,7 @@
 
 export interface UserConfig {
   apiKey: string;
-  modelProvider: 'claude' | 'openai';
+  modelProvider: 'claude' | 'openai' | 'deepseek';
   modelName: string;
   personalityPrompt: string;
 }

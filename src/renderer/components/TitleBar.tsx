@@ -28,7 +28,7 @@ const TitleBar: React.FC<Props> = ({ onOpenSidebar }) => {
             letterSpacing: '0.2px',
           }}
         >
-          Music AI
+          音乐伙伴
         </span>
       </div>
       <div style={{ display: 'flex', gap: 4, WebkitAppRegion: 'no-drag' } as React.CSSProperties}>

@@ -24,7 +24,13 @@ const Settings: React.FC = () => {
         <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--ink)', marginBottom: 6 }}>API 提供商</div>
         <select
           value={config.modelProvider}
-          onChange={(e) => setConfig({ ...config, modelProvider: e.target.value, modelName: e.target.value === 'claude' ? 'claude-sonnet-4-6' : 'gpt-4o' })}
+          onChange={(e) => {
+            const provider = e.target.value;
+            const defaultModel = provider === 'claude' ? 'claude-sonnet-4-6'
+              : provider === 'deepseek' ? 'deepseek-v4-pro'
+              : 'gpt-4o';
+            setConfig({ ...config, modelProvider: provider, modelName: defaultModel });
+          }}
           style={{
             width: '100%', background: 'var(--surface-elevated)', color: 'var(--ink)',
             border: '1px solid var(--hairline)', borderRadius: 8, padding: '8px 10px',
@@ -33,6 +39,7 @@ const Settings: React.FC = () => {
         >
           <option value="claude">Claude (Anthropic)</option>
           <option value="openai">OpenAI</option>
+          <option value="deepseek">DeepSeek</option>
         </select>
       </div>
 
@@ -52,6 +59,11 @@ const Settings: React.FC = () => {
               <option value="claude-sonnet-4-6">Claude Sonnet 4.6</option>
               <option value="claude-opus-4-7">Claude Opus 4.7</option>
               <option value="claude-haiku-4-5">Claude Haiku 4.5</option>
+            </>
+          ) : config.modelProvider === 'deepseek' ? (
+            <>
+              <option value="deepseek-v4-pro">DeepSeek V4 Pro</option>
+              <option value="deepseek-v4-flash">DeepSeek V4 Flash</option>
             </>
           ) : (
             <>
