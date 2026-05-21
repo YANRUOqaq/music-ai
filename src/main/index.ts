@@ -1,6 +1,8 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import { registerAllHandlers } from './ipc-handlers';
+import { initStorage } from './storage';
+import { initMusicEngine } from './music-engine';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -33,7 +35,11 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  initStorage();
   registerAllHandlers();
+  initMusicEngine().catch(err => {
+    console.error('Music engine init failed:', err);
+  });
   createWindow();
 });
 
