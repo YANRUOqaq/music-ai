@@ -1,4 +1,4 @@
-import { ipcMain } from 'electron';
+import { ipcMain, BrowserWindow } from 'electron';
 import { IPC_CHANNELS } from '../shared/types';
 import type {
   MusicSearchRequest, ImportLinkRequest, ImportFileRequest,
@@ -7,13 +7,20 @@ import type {
 import { searchMusic, play, pause, resume, setVolume, getState, initMusicEngine, onStateChange } from './music-engine';
 import { analyzePlaylist, updateProfileWithFeedback } from './preference-engine';
 import { sendMessage, getChatHistory } from './chat-service';
-import { getConfig, saveConfig, savePlaylist, getAllPlaylists, deletePlaylist, getPreferenceProfile, savePreferenceProfile } from './storage';
+import { getConfig, saveConfig, savePlaylist, getAllPlaylists, deletePlaylist, getPreferenceProfile, savePreferenceProfile, logError } from './storage';
+import { getAPIBase } from './netease-api-manager';
+import fs from 'fs';
 
 export function registerAllHandlers(): void {
   // ---- Music ----
 
   ipcMain.handle(IPC_CHANNELS.MUSIC_SEARCH, async (_event, req: MusicSearchRequest) => {
-    return searchMusic(req.keywords, req.limit);
+    try {
+      return await searchMusic(req.keywords, req.limit);
+    } catch (err: any) {
+      logError('音乐搜索失败', err);
+      throw err;
+    }
   });
 
   ipcMain.handle(IPC_CHANNELS.MUSIC_PLAY, async (_event, track: any) => {
@@ -42,8 +49,8 @@ export function registerAllHandlers(): void {
 
   // Push state changes to renderer
   onStateChange((state) => {
-    const windows = require('electron').BrowserWindow.getAllWindows();
-    windows.forEach(win => {
+    const windows = BrowserWindow.getAllWindows();
+    windows.forEach((win) => {
       win.webContents.send(IPC_CHANNELS.MUSIC_ON_STATE_CHANGE, state);
     });
   });
@@ -51,35 +58,39 @@ export function registerAllHandlers(): void {
   // ---- Playlist ----
 
   ipcMain.handle(IPC_CHANNELS.PLAYLIST_IMPORT_LINK, async (_event, req: ImportLinkRequest) => {
-    const match = req.url.match(/playlist\?id=(\d+)/) || req.url.match(/playlist\/(\d+)/);
-    if (!match) throw new Error('无法识别的歌单链接格式');
+    try {
+      const match = req.url.match(/playlist\?id=(\d+)/) || req.url.match(/playlist\/(\d+)/);
+      if (!match) throw new Error('无法识别的歌单链接格式');
 
-    const playlistId = match[1];
-    const base = require('./netease-api-manager').getAPIBase();
-    const response = await fetch(`${base}/playlist/detail?id=${playlistId}`);
-    const data = await response.json() as any;
+      const playlistId = match[1];
+      const base = getAPIBase();
+      const response = await fetch(`${base}/playlist/detail?id=${playlistId}`);
+      const data = await response.json() as any;
 
-    const playlist = {
-      id: `pl_${playlistId}_${Date.now()}`,
-      name: req.playlistName || data.playlist?.name || '导入的歌单',
-      source: 'netEase' as const,
-      tracks: (data.playlist?.tracks || []).map((t: any) => ({
-        id: `ne_${t.id}`,
-        title: t.name,
-        artist: (t.ar || []).map((a: any) => a.name).join(', '),
-        album: t.al?.name || '',
-        duration: (t.dt || 0) / 1000,
-        netEaseId: t.id,
-      })),
-      createdAt: new Date().toISOString(),
-    };
+      const playlist = {
+        id: `pl_${playlistId}_${Date.now()}`,
+        name: req.playlistName || data.playlist?.name || '导入的歌单',
+        source: 'netEase' as const,
+        tracks: (data.playlist?.tracks || []).map((t: any) => ({
+          id: `ne_${t.id}`,
+          title: t.name,
+          artist: (t.ar || []).map((a: any) => a.name).join(', '),
+          album: t.al?.name || '',
+          duration: (t.dt || 0) / 1000,
+          netEaseId: t.id,
+        })),
+        createdAt: new Date().toISOString(),
+      };
 
-    savePlaylist(playlist);
-    return playlist;
+      savePlaylist(playlist);
+      return playlist;
+    } catch (err: any) {
+      logError('歌单导入失败', err);
+      throw err;
+    }
   });
 
   ipcMain.handle(IPC_CHANNELS.PLAYLIST_IMPORT_FILE, async (_event, req: ImportFileRequest) => {
-    const fs = require('fs');
     const content = fs.readFileSync(req.filePath, 'utf-8');
     const data = JSON.parse(content);
 
@@ -113,16 +124,21 @@ export function registerAllHandlers(): void {
   // ---- Preference ----
 
   ipcMain.handle(IPC_CHANNELS.PREFERENCE_ANALYZE, async (_event, req: AnalyzePlaylistRequest) => {
-    const config = getConfig();
-    const playlists = getAllPlaylists();
-    const playlist = playlists.find(p => p.id === req.playlistId);
-    if (!playlist) throw new Error('歌单不存在');
+    try {
+      const config = getConfig();
+      const playlists = getAllPlaylists();
+      const playlist = playlists.find(p => p.id === req.playlistId);
+      if (!playlist) throw new Error('歌单不存在');
 
-    return analyzePlaylist(playlist, {
-      apiKey: config.apiKey,
-      provider: config.modelProvider,
-      model: config.modelName,
-    });
+      return analyzePlaylist(playlist, {
+        apiKey: config.apiKey,
+        provider: config.modelProvider,
+        model: config.modelName,
+      });
+    } catch (err: any) {
+      logError('偏好分析失败', err);
+      throw err;
+    }
   });
 
   ipcMain.handle(IPC_CHANNELS.PREFERENCE_GET, async () => {
@@ -143,7 +159,12 @@ export function registerAllHandlers(): void {
   // ---- Chat ----
 
   ipcMain.handle(IPC_CHANNELS.CHAT_SEND, async (_event, req: ChatSendRequest) => {
-    return sendMessage(req.message, req.sessionId);
+    try {
+      return await sendMessage(req.message, req.sessionId);
+    } catch (err: any) {
+      logError('聊天请求失败', err);
+      throw err;
+    }
   });
 
   ipcMain.handle(IPC_CHANNELS.CHAT_GET_HISTORY, async (_event, sessionId: string) => {

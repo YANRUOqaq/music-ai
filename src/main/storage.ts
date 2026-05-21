@@ -135,3 +135,20 @@ export function appendMessage(sessionId: string, message: ChatMessage): void {
 export function closeStorage(): void {
   db.close();
 }
+
+// ---- Error Logging ----
+
+const ERROR_LOG_PATH = path.join(__dirname, '..', '..', 'wrong record', 'error-log.md');
+
+export function logError(description: string, error: Error): void {
+  const timestamp = new Date().toISOString();
+  const entry = `\n### [${timestamp}] ${description}\n\n**现象**：${error.message}\n**堆栈**：\`\`\`\n${error.stack || '无堆栈'}\n\`\`\`\n**状态**：未解决\n\n---\n`;
+
+  try {
+    const content = fs.readFileSync(ERROR_LOG_PATH, 'utf-8');
+    const updated = content.replace('> 暂无记录', '').replace('## 错误列表\n', `## 错误列表\n${entry}`);
+    fs.writeFileSync(ERROR_LOG_PATH, updated);
+  } catch {
+    // Log path might not exist in dev; silently skip
+  }
+}
