@@ -17,7 +17,7 @@ const AlbumArt: React.FC<Props> = ({
   track, isPlaying, progress, duration, volume,
   onPlayPause, onNext, onPrev, onVolumeChange,
 }) => {
-  const progressPct = duration > 0 ? (progress / duration) * 100 : 0;
+  const progressPct = Math.min(100, duration > 0 ? (progress / duration) * 100 : 0);
   const formatTime = (s: number) => {
     const m = Math.floor(s / 60);
     const sec = Math.floor(s % 60);
@@ -28,7 +28,7 @@ const AlbumArt: React.FC<Props> = ({
     <div style={{
       width: 180, display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center',
-      padding: '16px 20px', gap: 10,
+      padding: '16px 20px', gap: 10, overflow: 'hidden',
     }}>
       <div style={{
         width: 96, height: 96, borderRadius: 10,
@@ -86,14 +86,14 @@ const AlbumArt: React.FC<Props> = ({
         </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, width: '100%' }}>
-        <span style={{ fontSize: 10, color: 'var(--ash)' }}>🔊</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, width: '100%', minWidth: 0 }}>
+        <span style={{ fontSize: 10, color: 'var(--ash)', flexShrink: 0 }}>🔊</span>
         <input
           type="range"
           min={0} max={100}
           value={volume}
           onChange={(e) => onVolumeChange(Number(e.target.value))}
-          style={{ flex: 1, accentColor: 'var(--ink)' }}
+          style={{ flex: 1, minWidth: 0, accentColor: 'var(--ink)' }}
         />
       </div>
     </div>
