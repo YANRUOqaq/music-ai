@@ -1,0 +1,113 @@
+:root {
+  --canvas: #07080a;
+  --surface: #0d0d0d;
+  --surface-elevated: #101111;
+  --surface-card: #121212;
+  --ink: #f4f4f6;
+  --body: #cdcdcd;
+  --muted: #9c9c9d;
+  --ash: #6a6b6c;
+  --stone: #434345;
+  --hairline: #242728;
+  --hairline-strong: rgba(255, 255, 255, 0.16);
+  --hairline-soft: rgba(255, 255, 255, 0.08);
+  --primary: #ffffff;
+  --on-primary: #000000;
+  --font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 16px;
+  --radius-pill: 9999px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-xxl: 32px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  background: var(--canvas);
+  color: var(--body);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow: hidden;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--hairline);
+  border-radius: 3px;
+}
+
+input, textarea {
+  font-family: var(--font-family);
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--surface-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 6px 10px;
+  outline: none;
+  transition: border-color 150ms;
+}
+input:focus, textarea:focus {
+  border-color: var(--hairline-strong);
+}
+
+button {
+  font-family: var(--font-family);
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--on-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.btn-secondary:hover {
+  background: var(--surface);
+}
