@@ -1,0 +1,18 @@
+appId: com.musicai.agent
+productName: Music AI
+directories:
+  output: release
+files:
+  - dist/**/*
+  - package.json
+win:
+  target:
+    - nsis
+  icon: assets/icon.ico
+mac:
+  target:
+    - dmg
+  icon: assets/icon.icns
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
