@@ -17,7 +17,7 @@ const TitleBar: React.FC<Props> = ({ onOpenSidebar }) => {
         background: 'var(--canvas)',
         borderBottom: '1px solid var(--hairline)',
         WebkitAppRegion: 'drag',
-      }}
+      } as React.CSSProperties}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <span
@@ -31,7 +31,7 @@ const TitleBar: React.FC<Props> = ({ onOpenSidebar }) => {
           Music AI
         </span>
       </div>
-      <div style={{ display: 'flex', gap: 4, WebkitAppRegion: 'no-drag' }}>
+      <div style={{ display: 'flex', gap: 4, WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
         <button className="btn-secondary" style={{ fontSize: 11, padding: '3px 10px' }} onClick={() => onOpenSidebar('import')}>
           导入
         </button>
