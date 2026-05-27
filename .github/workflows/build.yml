@@ -5,6 +5,9 @@ on:
     branches: [master, main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-mac:
     runs-on: macos-latest
@@ -18,9 +21,7 @@ jobs:
       - run: pip3 install --break-system-packages setuptools
       - run: npm ci
 
-      - run: npm run pack:mac
-        env:
-          GH_TOKEN: "skip"
+      - run: npm run build && electron-builder --mac --publish never
 
       - uses: actions/upload-artifact@v4
         with:
@@ -39,9 +40,7 @@ jobs:
       - run: python -m pip install setuptools
       - run: npm ci
 
-      - run: npm run pack:win
-        env:
-          GH_TOKEN: "skip"
+      - run: npm run build && electron-builder --win --publish never
 
       - uses: actions/upload-artifact@v4
         with:
