@@ -15,6 +15,7 @@ jobs:
         with:
           node-version: 20
 
+      - run: pip3 install setuptools
       - run: npm ci
 
       - run: npm run pack:mac
@@ -33,6 +34,7 @@ jobs:
         with:
           node-version: 20
 
+      - run: python -m pip install setuptools
       - run: npm ci
 
       - run: npm run pack:win
